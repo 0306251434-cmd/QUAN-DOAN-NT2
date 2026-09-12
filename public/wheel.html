@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vòng Quay Chia Team - Tối đa 4 người/Team</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .wheel-container {
+      position: relative;
+      z-index: 1;
+      width: 95%;
+      max-width: 1100px;
+      margin: 30px auto;
+      background: var(--card-bg);
+      backdrop-filter: blur(18px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 16px 50px rgba(0,0,0,0.7);
+      text-align: center;
+    }
+
+    .wheel-layout {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 40px;
+      margin-top: 25px;
+    }
+
+    .wheel-wrapper {
+      position: relative;
+      width: 380px;
+      height: 380px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #wheelCanvas {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.3);
+      transition: transform 5s cubic-bezier(0.1, 0.9, 0.2, 1);
+    }
+
+    .wheel-pointer {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0; 
+      height: 0; 
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-top: 28px solid #ff0055;
+      z-index: 10;
+      filter: drop-shadow(0 0 8px #ff0055);
+    }
+
+    .wheel-center-dot {
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      background: #0b0e14;
+      border: 3px solid #00f0ff;
+      border-radius: 50%;
+      z-index: 5;
+      box-shadow: 0 0 10px #00f0ff;
+    }
+
+    .team-info-box {
+      flex: 1;
+      min-width: 300px;
+      max-width: 480px;
+      background: rgba(11, 14, 20, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 22px;
+      text-align: left;
+    }
+
+    .team-badge-header {
+      font-size: 1.3rem;
+      color: #ffd700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .member-list-item {
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-left: 3px solid #00f0ff;
+    }
+
+    .status-msg {
+      margin-top: 15px;
+      font-size: 0.95rem;
+      color: #ff0055;
+      font-weight: 600;
+    }
+
+    .slot-info {
+      font-size: 0.78rem;
+      padding: 2px 8px;
+      background: rgba(0, 240, 255, 0.15);
+      color: #00f0ff;
+      border-radius: 4px;
+      margin-left: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="background-glow glow-1"></div>
+  <div class="background-glow glow-2"></div>
+
+  <div class="wheel-container">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <a href="index.html" class="btn-action btn-key" style="text-decoration: none;">
+        <i class="fa-solid fa-arrow-left"></i> Về Trang Chủ
+      </a>
+      <h2 style="color: #fff; font-size: 1.3rem;">VÒNG QUAY NỘI CHIẾN (TỐI ĐA 4 NGƯỜI / TEAM)</h2>
+      <div style="width: 100px;"></div>
+    </div>
+
+    <div class="wheel-layout">
+      <!-- Cột trái: Vòng quay -->
+      <div>
+        <div class="wheel-wrapper">
+          <div class="wheel-pointer"></div>
+          <div class="wheel-center-dot"></div>
+          <canvas id="wheelCanvas" width="500" height="500"></canvas>
+        </div>
+
+        <button id="btnSpin" class="btn-submit" style="margin-top: 24px; max-width: 260px; margin-left: auto; margin-right: auto;">
+          <i class="fa-solid fa-rotate"></i> QUAY TEAM NGAY
+        </button>
+        <p id="spinStatus" class="status-msg"></p>
+      </div>
+
+      <!-- Cột phải: Thông tin team -->
+      <div class="team-info-box" id="teamBox">
+        <h3 class="team-badge-header">
+          <i class="fa-solid fa-shield-halved"></i> 
+          <span id="teamTitle">Chưa Chọn Team</span>
+        </h3>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px;">
+          Đội hình hiện tại của bạn:
+        </p>
+        <div id="teamMemberList">
+          <p style="color: var(--text-muted); font-style: italic;">Quay để xem đội hình.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const userJson = localStorage.getItem('currentUser');
+    if (!userJson) {
+      alert('Vui lòng đăng nhập!');
+      window.location.href = 'login.html';
+    }
+    const currentUser = JSON.parse(userJson);
+
+    const canvas = document.getElementById('wheelCanvas');
+    const ctx = canvas.getContext('2d');
+    const btnSpin = document.getElementById('btnSpin');
+    const spinStatus = document.getElementById('spinStatus');
+
+    let availableTeams = [];
+    let currentRotation = 0;
+    let isSpinning = false;
+
+    const segmentColors = [
+      '#1e293b', '#312e81', '#1e3a8a', '#14532d',
+      '#713f12', '#701a75', '#4c0519', '#164e63',
+      '#365314', '#581c87', '#0f172a', '#3f3f46'
+    ];
+
+    // 1. Tải các team còn chỗ (< 4 người) và vẽ vòng quay
+    async function loadAvailableTeamsAndDraw() {
+      try {
+        const res = await fetch('/api/event/available-teams');
+        const data = await res.json();
+
+        if (data.success) {
+          availableTeams = data.availableTeams;
+
+          if (availableTeams.length === 0) {
+            btnSpin.disabled = true;
+            spinStatus.textContent = 'Tất cả 12 Team đã đủ 4 người! Giải đấu đã kín chỗ.';
+            drawEmptyWheel();
+            return;
+          }
+
+          drawWheel(availableTeams, data.teamCounts);
+        }
+      } catch (err) {
+        console.error('Lỗi tải danh sách team:', err);
+      }
+    }
+
+    // 2. Vẽ vòng quay động theo danh sách team còn lại
+    function drawWheel(teams, counts) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const total = teams.length;
+      const arc = (2 * Math.PI) / total;
+      const radius = canvas.width / 2;
+
+      for (let i = 0; i < total; i++) {
+        const teamNum = teams[i];
+        const angle = i * arc;
+
+        // Vẽ từng múi quạt
+        ctx.beginPath();
+        ctx.fillStyle = segmentColors[i % segmentColors.length];
+        ctx.moveTo(radius, radius);
+        ctx.arc(radius, radius, radius, angle, angle + arc);
+        ctx.fill();
+
+        ctx.strokeStyle = '#00f0ff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Vẽ tên Team + số slot đã nhận (ví dụ: TEAM 3 (2/4))
+        ctx.save();
+        ctx.fillStyle = '#00f0ff';
+        ctx.font = total > 8 ? 'bold 16px sans-serif' : 'bold 19px sans-serif';
+        ctx.translate(radius, radius);
+        ctx.rotate(angle + arc / 2);
+        ctx.textAlign = 'right';
+        ctx.fillText(`TEAM ${teamNum} (${counts[teamNum]}/4)`, radius - 20, 6);
+        ctx.restore();
+      }
+    }
+
+    function drawEmptyWheel() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#333';
+      ctx.beginPath();
+      ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+
+    // 3. Kiểm tra xem người đang đăng nhập đã có team chưa
+    async function checkUserStatus() {
+      try {
+        const res = await fetch(`/api/event/user-status/${currentUser.id}`);
+        const data = await res.json();
+
+        if (data.success && data.hasSpun) {
+          btnSpin.disabled = true;
+          btnSpin.style.opacity = '0.5';
+          btnSpin.style.cursor = 'not-allowed';
+          spinStatus.textContent = `Bạn đã thuộc Team ${data.teamNumber} (Mỗi người chỉ quay 1 lần).`;
+          loadTeamDetails(data.teamNumber);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // 4. Bấm quay
+    btnSpin.addEventListener('click', async () => {
+      if (isSpinning || availableTeams.length === 0) return;
+      isSpinning = true;
+      btnSpin.disabled = true;
+      spinStatus.textContent = 'Hệ thống đang lựa chọn chiến đội còn trống...';
+
+      // Chọn ngẫu nhiên 1 trong các team CÒN CHỖ
+      const randomIndex = Math.floor(Math.random() * availableTeams.length);
+      const chosenTeam = availableTeams[randomIndex];
+
+      // Tính góc quay sao cho dừng đúng múi quạt đã chọn
+      const total = availableTeams.length;
+      const arcDegree = 360 / total;
+      const targetDegree = 360 - (randomIndex * arcDegree + arcDegree / 2) + 270;
+      const totalDegrees = 360 * 6 + (targetDegree % 360);
+
+      currentRotation += totalDegrees;
+      canvas.style.transform = `rotate(${currentRotation}deg)`;
+
+      // Đợi hết animation quay (5s)
+      setTimeout(async () => {
+        isSpinning = false;
+        try {
+          const res = await fetch('/api/event/spin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: currentUser.id, teamNumber: chosenTeam })
+          });
+          const result = await res.json();
+
+          if (result.success) {
+            spinStatus.textContent = `Chúc mừng! Bạn đã gia nhập TEAM ${chosenTeam}!`;
+            loadTeamDetails(chosenTeam);
+            loadAvailableTeamsAndDraw(); // Tải lại để cập nhật số người hoặc xóa ô nếu vừa đủ 4
+          } else {
+            spinStatus.textContent = result.message;
+            if (result.alreadySpun) loadTeamDetails(result.teamNumber);
+            loadAvailableTeamsAndDraw();
+          }
+        } catch (e) {
+          spinStatus.textContent = 'Lỗi kết nối máy chủ!';
+        }
+      }, 5000);
+    });
+
+    // 5. Nạp danh sách thành viên trong team
+    async function loadTeamDetails(teamNumber) {
+      document.getElementById('teamTitle').textContent = `CHIẾN ĐỘI: TEAM ${teamNumber}`;
+      try {
+        const res = await fetch(`/api/event/team/${teamNumber}`);
+        const data = await res.json();
+        const listDiv = document.getElementById('teamMemberList');
+
+        if (data.success && data.members.length > 0) {
+          listDiv.innerHTML = data.members.map((m, idx) => `
+            <div class="member-list-item">
+              <div>
+                <span style="color: var(--primary); font-weight: bold; margin-right: 8px;">#${idx + 1}</span>
+                <strong>${m.username}</strong>
+              </div>
+              <span class="slot-info">${m.role}</span>
+            </div>
+          `).join('');
+
+          if (data.members.length >= 4) {
+            listDiv.innerHTML += '<p style="color: #ff0055; font-size: 0.82rem; margin-top: 10px; font-weight: bold;"><i class="fa-solid fa-lock"></i> Đội hình này đã ĐẦY (4/4 người).</p>';
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Khởi động
+    loadAvailableTeamsAndDraw();
+    checkUserStatus();
+  </script>
+</body>
+</html>

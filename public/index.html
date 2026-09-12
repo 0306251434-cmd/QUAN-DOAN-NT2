@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bản Doanh Quân Đoàn - Cyberpunk</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Bố cục tổng thể */
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    .dashboard-container {
+      position: relative;
+      z-index: 1;
+      width: 95%;
+      max-width: 1200px;
+      margin: 30px auto;
+      background: var(--card-bg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.7);
+    }
+
+    /* Top bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 18px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .welcome-text {
+      font-size: 1.5rem;
+      color: #fff;
+    }
+
+    .user-highlight {
+      color: var(--primary);
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+    }
+
+    .user-tag {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin-left: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-action {
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: 0.25s;
+    }
+
+    .btn-key {
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid var(--primary);
+      color: var(--primary);
+    }
+    .btn-key:hover {
+      background: var(--primary);
+      color: #0b0e14;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+    }
+
+    .btn-logout {
+      background: rgba(255, 0, 85, 0.1);
+      border: 1px solid var(--accent);
+      color: #ff4d79;
+    }
+    .btn-logout:hover {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 0 15px rgba(255, 0, 85, 0.5);
+    }
+
+    /* Thanh Event Quân Đoàn */
+    .event-section {
+      background: linear-gradient(135deg, rgba(20, 27, 45, 0.85), rgba(35, 15, 30, 0.85));
+      border: 1px solid rgba(255, 0, 85, 0.3);
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin-bottom: 30px;
+      box-shadow: 0 0 20px rgba(255, 0, 85, 0.15);
+    }
+
+    .event-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .event-title {
+      color: #ff0055;
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .event-timer {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      color: #00f0ff;
+    }
+
+    .event-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+    }
+
+    .event-item {
+      background: rgba(11, 14, 20, 0.6);
+      border-left: 3px solid #00f0ff;
+      padding: 12px 14px;
+      border-radius: 6px;
+    }
+
+    .event-item h5 {
+      color: #fff;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+
+    /* Danh sách thành viên 3 cấp */
+    .tier-section {
+      margin-bottom: 30px;
+    }
+
+    .tier-title {
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .leader-title { color: #ffd700; }
+    .veteran-title { color: #00f0ff; }
+    .member-title { color: #b8c4d9; }
+
+    .member-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .member-card {
+      background: rgba(11, 14, 20, 0.7);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: transform 0.2s;
+    }
+    .member-card:hover { transform: translateY(-3px); }
+
+    .card-leader { border-color: rgba(255, 215, 0, 0.4); }
+    .card-veteran { border-color: rgba(0, 240, 255, 0.4); }
+    .card-member { border-color: rgba(255, 255, 255, 0.08); }
+
+    .card-left { display: flex; align-items: center; gap: 12px; }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .avatar-leader { background: rgba(255, 215, 0, 0.15); color: #ffd700; }
+    .avatar-veteran { background: rgba(0, 240, 255, 0.15); color: #00f0ff; }
+    .avatar-member { background: rgba(255, 255, 255, 0.1); color: #b8c4d9; }
+
+    .member-info h4 { font-size: 0.92rem; color: #fff; margin-bottom: 2px; }
+    .member-info p { font-size: 0.78rem; color: var(--text-muted); word-break: break-all; }
+
+    .actions-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .role-select {
+      background: #0b0e14;
+      color: var(--primary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 5px 8px;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+
+    .btn-delete-member {
+      background: rgba(255, 0, 85, 0.15);
+      border: 1px solid var(--accent);
+      color: #ff4d79;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: 0.2s;
+    }
+    .btn-delete-member:hover {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 0 10px rgba(255, 0, 85, 0.5);
+    }
+
+    .badge {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-leader { background: #ffd700; color: #000; }
+    .badge-veteran { background: #00f0ff; color: #000; }
+    .badge-member { background: rgba(255, 255, 255, 0.15); color: #fff; }
+
+    /* Modal Đổi Mật Khẩu */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-box {
+      background: var(--card-bg);
+      border: 1px solid var(--primary);
+      border-radius: 14px;
+      padding: 26px;
+      width: 90%;
+      max-width: 380px;
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .btn-close-modal {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    /* Tối ưu hóa cho Mobile dọc */
+    @media (max-width: 768px) {
+      .dashboard-container {
+        width: 94%;
+        margin: 15px auto;
+        padding: 18px 14px;
+      }
+
+      .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .header-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .btn-action {
+        flex: 1;
+        justify-content: center;
+        padding: 8px 10px;
+        font-size: 0.8rem;
+      }
+
+      .event-grid, .member-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .event-section {
+        padding: 14px;
+      }
+
+      .event-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .member-card {
+        padding: 12px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .member-card > div:last-child {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .actions-wrapper {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .role-select {
+        flex: 1;
+        padding: 7px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="background-glow glow-1"></div>
+  <div class="background-glow glow-2"></div>
+
+  <div class="dashboard-container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div>
+        <h1 class="welcome-text" id="greetingHeader">Chào <span class="user-highlight">Chiến Binh</span>!</h1>
+        <span id="roleBadge" class="user-tag">---</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn-action btn-key" id="btnOpenPassModal">
+          <i class="fa-solid fa-key"></i> Đổi Mật Khẩu
+        </button>
+        <button class="btn-action btn-logout" id="btnLogout">
+          <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+        </button>
+      </div>
+    </div>
+
+    <!-- Thanh Sự Kiện Giải Đấu Nội Chiến Sinh Tồn -->
+    <div class="event-section">
+      <div class="event-header">
+        <div class="event-title">
+          <i class="fa-solid fa-fire"></i> TRẬN SINH TỒN ĐOẠT GIẢI NỘI CHIẾN
+        </div>
+        <div class="event-timer">
+          <i class="fa-regular fa-calendar-check"></i> Khởi tranh: 20:00 - Ngày 18/09
+        </div>
+      </div>
+
+      <!-- Cơ cấu giải thưởng -->
+      <div class="event-grid">
+        <div class="event-item" style="border-left-color: #ffd700;">
+          <h5><i class="fa-solid fa-trophy" style="color: #ffd700;"></i> Giải Nhất</h5>
+          <p style="color: #ffd700; font-size: 1.1rem; font-weight: 700;">50.000 VNĐ</p>
+        </div>
+        <div class="event-item" style="border-left-color: #00f0ff;">
+          <h5><i class="fa-solid fa-medal" style="color: #00f0ff;"></i> Giải Nhì</h5>
+          <p style="color: #00f0ff; font-size: 1.1rem; font-weight: 700;">40.000 VNĐ</p>
+        </div>
+        <div class="event-item" style="border-left-color: #cd7f32;">
+          <h5><i class="fa-solid fa-award" style="color: #cd7f32;"></i> Giải Ba</h5>
+          <p style="color: #cd7f32; font-size: 1.1rem; font-weight: 700;">30.000 VNĐ</p>
+        </div>
+        <div class="event-item" style="border-left-color: #ff0055;">
+          <h5><i class="fa-solid fa-star" style="color: #ff0055;"></i> MVP Xuất Sắc Nhất</h5>
+          <p style="color: #ff0055; font-size: 1.1rem; font-weight: 700;">20.000 VNĐ</p>
+        </div>
+      </div>
+
+      <!-- Nút Đăng Ký Chuyển Sang Vòng Quay -->
+      <div style="margin-top: 20px; text-align: right;">
+        <button onclick="window.location.href='wheel.html'" class="btn-submit" style="display: inline-flex; width: auto; padding: 12px 28px; background: linear-gradient(90deg, #ff0055, #ff5500); box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);">
+          <i class="fa-solid fa-dice"></i> ĐĂNG KÝ THAM GIA & QUAY TEAM
+        </button>
+      </div>
+    </div>
+
+    <!-- Nhóm 1: Chủ Quân Đoàn -->
+    <div class="tier-section">
+      <h2 class="tier-title leader-title"><i class="fa-solid fa-crown"></i> Chủ Quân Đoàn</h2>
+      <div class="member-grid" id="leaderList"></div>
+    </div>
+
+    <!-- Nhóm 2: Kỳ Cựu -->
+    <div class="tier-section">
+      <h2 class="tier-title veteran-title"><i class="fa-solid fa-medal"></i> Kỳ Cựu</h2>
+      <div class="member-grid" id="veteranList"></div>
+    </div>
+
+    <!-- Nhóm 3: Thành Viên -->
+    <div class="tier-section">
+      <h2 class="tier-title member-title"><i class="fa-solid fa-users"></i> Thành Viên</h2>
+      <div class="member-grid" id="memberList"></div>
+    </div>
+  </div>
+
+  <!-- Cửa sổ Modal Đổi Mật Khẩu -->
+  <div class="modal-overlay" id="passwordModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="color: var(--primary); font-size: 1.1rem;"><i class="fa-solid fa-shield-halved"></i> Đổi Mật Khẩu</h3>
+        <button class="btn-close-modal" id="btnCloseModal">&times;</button>
+      </div>
+      <form id="changePasswordForm">
+        <div class="input-group">
+          <label for="oldPass">Mật khẩu hiện tại</label>
+          <div class="input-wrapper">
+            <input type="password" id="oldPass" required placeholder="••••••••">
+          </div>
+        </div>
+        <div class="input-group" style="margin-top: 14px;">
+          <label for="newPass">Mật khẩu mới</label>
+          <div class="input-wrapper">
+            <input type="password" id="newPass" required placeholder="Ít nhất 6 ký tự">
+          </div>
+        </div>
+        <button type="submit" class="btn-submit" style="margin-top: 20px;">XÁC NHẬN CẬP NHẬT</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // 1. Kiểm tra session đăng nhập
+    const userJson = localStorage.getItem('currentUser');
+    if (!userJson) {
+      alert('Vui lòng đăng nhập!');
+      window.location.href = 'login.html';
+    }
+    const currentUser = JSON.parse(userJson);
+
+    document.getElementById('greetingHeader').innerHTML = `Chào <span class="user-highlight">${currentUser.username}</span>!`;
+    const roleBadge = document.getElementById('roleBadge');
+    roleBadge.textContent = currentUser.role || 'Thành viên';
+    if (currentUser.role === 'Chủ quân đoàn') {
+      roleBadge.style.background = '#ffd700';
+      roleBadge.style.color = '#000';
+      roleBadge.textContent = 'Quản trị viên (Chủ quân đoàn)';
+    }
+
+    // 2. Tải danh sách thành viên từ Server
+    async function loadMembers() {
+      try {
+        const response = await fetch('/api/members');
+        const data = await response.json();
+        if (data.success) renderGroups(data.members);
+      } catch (err) {
+        console.error('Lỗi nạp danh sách:', err);
+      }
+    }
+
+    function renderGroups(members) {
+      const leaderList = document.getElementById('leaderList');
+      const veteranList = document.getElementById('veteranList');
+      const memberList = document.getElementById('memberList');
+
+      leaderList.innerHTML = '';
+      veteranList.innerHTML = '';
+      memberList.innerHTML = '';
+
+      const leaders = members.filter(m => m.role === 'Chủ quân đoàn');
+      const veterans = members.filter(m => m.role === 'Kỳ cựu');
+      const standardMembers = members.filter(m => m.role !== 'Chủ quân đoàn' && m.role !== 'Kỳ cựu');
+
+      appendCards(leaders, leaderList, 'card-leader', 'avatar-leader', 'fa-crown', 'badge-leader');
+      appendCards(veterans, veteranList, 'card-veteran', 'avatar-veteran', 'fa-shield-halved', 'badge-veteran');
+      appendCards(standardMembers, memberList, 'card-member', 'avatar-member', 'fa-user', 'badge-member');
+    }
+
+    function appendCards(group, container, cardClass, avatarClass, iconClass, badgeClass) {
+      if (group.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem; font-style: italic;">Chưa có thành viên nào.</p>';
+        return;
+      }
+
+      const isAdmin = currentUser.role === 'Chủ quân đoàn';
+
+      group.forEach(m => {
+        const card = document.createElement('div');
+        card.className = `member-card ${cardClass}`;
+
+        let actionHtml = `<span class="badge ${badgeClass}">${m.role || 'Thành viên'}</span>`;
+
+        if (isAdmin) {
+          // Chỉ hiện nút xóa nếu không phải là chính mình
+          const deleteBtnHtml = (m.id !== currentUser.id) 
+            ? `<button class="btn-delete-member" onclick="deleteMember(${m.id}, '${m.username}')" title="Trục xuất thành viên">
+                 <i class="fa-solid fa-trash-can"></i>
+               </button>`
+            : '';
+
+          actionHtml = `
+            <div class="actions-wrapper">
+              <select class="role-select" onchange="changeRole(${m.id}, this.value)">
+                <option value="Chủ quân đoàn" ${m.role === 'Chủ quân đoàn' ? 'selected' : ''}>Chủ quân đoàn</option>
+                <option value="Kỳ cựu" ${m.role === 'Kỳ cựu' ? 'selected' : ''}>Kỳ cựu</option>
+                <option value="Thành viên" ${m.role !== 'Chủ quân đoàn' && m.role !== 'Kỳ cựu' ? 'selected' : ''}>Thành viên</option>
+              </select>
+              ${deleteBtnHtml}
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          <div class="card-left">
+            <div class="avatar ${avatarClass}"><i class="fa-solid ${iconClass}"></i></div>
+            <div class="member-info">
+              <h4>${m.username}</h4>
+              <p>${m.email}</p>
+            </div>
+          </div>
+          <div>${actionHtml}</div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // 3. Phân quyền thành viên (Chủ quân đoàn)
+    async function changeRole(targetUserId, newRole) {
+      if (!confirm(`Bạn có chắc muốn chuyển thành viên này sang chức vụ "${newRole}"?`)) {
+        loadMembers();
+        return;
+      }
+      try {
+        const res = await fetch('/api/members/role', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ adminId: currentUser.id, targetUserId, newRole })
+        });
+        const data = await res.json();
+        if (data.success) {
+          if (targetUserId === currentUser.id) {
+            currentUser.role = newRole;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          }
+          loadMembers();
+        } else {
+          alert(data.message);
+          loadMembers();
+        }
+      } catch (err) {
+        alert('Lỗi kết nối máy chủ!');
+      }
+    }
+
+    // 4. Xóa vĩnh viễn thành viên (Chủ quân đoàn)
+    async function deleteMember(targetUserId, username) {
+      const confirmDelete = confirm(`CẢNH BÁO:\nBạn có chắc chắn muốn trục xuất và xóa tài khoản "${username}" khỏi hệ thống?`);
+      if (!confirmDelete) return;
+
+      try {
+        const res = await fetch(`/api/members/${targetUserId}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ adminId: currentUser.id })
+        });
+
+        const data = await res.json();
+        alert(data.message);
+
+        if (data.success) {
+          loadMembers();
+        }
+      } catch (err) {
+        alert('Lỗi kết nối khi xóa thành viên!');
+      }
+    }
+
+    // 5. Xử lý Modal Đổi Mật Khẩu
+    const modal = document.getElementById('passwordModal');
+    document.getElementById('btnOpenPassModal').onclick = () => modal.style.display = 'flex';
+    document.getElementById('btnCloseModal').onclick = () => modal.style.display = 'none';
+
+    document.getElementById('changePasswordForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const oldPassword = document.getElementById('oldPass').value;
+      const newPassword = document.getElementById('newPass').value;
+
+      try {
+        const res = await fetch('/api/auth/change-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: currentUser.id, oldPassword, newPassword })
+        });
+        const data = await res.json();
+        alert(data.message);
+        if (data.success) {
+          modal.style.display = 'none';
+          document.getElementById('changePasswordForm').reset();
+        }
+      } catch (err) {
+        alert('Không thể cập nhật mật khẩu lúc này!');
+      }
+    };
+
+    // 6. Đăng xuất
+    document.getElementById('btnLogout').onclick = () => {
+      localStorage.removeItem('currentUser');
+      window.location.href = 'login.html';
+    };
+
+    loadMembers();
+  </script>
+</body>
+</html>

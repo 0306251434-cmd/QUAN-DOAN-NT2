@@ -1,0 +1,272 @@
+/* Thiết lập font chữ và biến màu gaming */
+:root {
+  --bg-color: #0b0e14;
+  --card-bg: rgba(18, 24, 38, 0.85);
+  --primary: #00f0ff;          /* Xanh cyan neon */
+  --primary-hover: #00c2cf;
+  --accent: #ff0055;           /* Hồng neon */
+  --text-main: #f0f4fc;
+  --text-muted: #8b9bb4;
+  --border-color: rgba(0, 240, 255, 0.25);
+  --border-focus: #00f0ff;
+  --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--font-family);
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Ánh sáng nền tạo chiều sâu gaming */
+.background-glow {
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.glow-1 {
+  top: 10%;
+  left: 20%;
+  background: rgba(0, 240, 255, 0.15);
+}
+
+.glow-2 {
+  bottom: 15%;
+  right: 20%;
+  background: rgba(255, 0, 85, 0.12);
+}
+
+/* Khung form đăng nhập */
+.login-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  margin: 20px;
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 40px 32px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6),
+              0 0 20px rgba(0, 240, 255, 0.1);
+}
+
+/* Tiêu đề & Logo */
+.card-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.badge-icon {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(255, 0, 85, 0.2));
+  border: 1px solid var(--border-color);
+  font-size: 26px;
+  color: var(--primary);
+  margin-bottom: 12px;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+}
+
+.card-header h2 {
+  font-size: 1.4rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+}
+
+.card-header p {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  margin-top: 6px;
+}
+
+/* Các trường nhập liệu */
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding: 13px 40px 13px 42px;
+  background: rgba(11, 14, 20, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: var(--text-main);
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.25s ease;
+}
+
+.input-wrapper input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.35);
+  background: rgba(11, 14, 20, 0.9);
+}
+
+.btn-toggle-pass {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.btn-toggle-pass:hover {
+  color: var(--primary);
+}
+
+/* Quên mật khẩu & Ghi nhớ */
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  margin-bottom: 24px;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.remember-me input {
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.forgot-link {
+  color: var(--primary);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+  opacity: 0.85;
+}
+
+/* Nút Submit */
+.btn-submit {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(90deg, #00f0ff, #0099ff);
+  border: none;
+  border-radius: 8px;
+  color: #0b0e14;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.65);
+}
+
+.btn-submit:active {
+  transform: translateY(0);
+}
+
+/* Footer liên kết sang Đăng ký */
+.card-footer {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 24px;
+}
+
+.card-footer a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.card-footer a:hover {
+  text-decoration: underline;
+}
+/* Chống tràn ngang toàn bộ website trên di động */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Tối ưu hóa hiển thị dọc cho Mobile */
+@media (max-width: 768px) {
+  body {
+    padding: 10px 0;
+    align-items: flex-start; /* Không ép căn giữa dọc trên màn hình dài */
+  }
+
+  .login-card {
+    margin: 15px;
+    padding: 28px 18px;
+    width: calc(100% - 30px);
+  }
+
+  .card-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .input-wrapper input {
+    font-size: 16px; /* Tránh tình trạng iPhone tự động zoom vào ô input khi gõ */
+  }
+}

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng Nhập Quân Đoàn</title>
+  <!-- Link icon Font Awesome để hiển thị biểu tượng ổ khóa, email -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Khối nền hiệu ứng ánh sáng -->
+  <div class="background-glow glow-1"></div>
+  <div class="background-glow glow-2"></div>
+
+  <div class="login-card">
+    <div class="card-header">
+      <div class="badge-icon">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <h2>QUÂN ĐOÀN NÀI TÌ NÁI TI</h2>
+      <p>Cổng xác thực danh tính thành viên</p>
+    </div>
+
+    <form id="loginForm" class="login-form">
+      <!-- Ô nhập Email -->
+      <div class="input-group">
+        <label for="email">Email tài khoản</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-envelope input-icon"></i>
+          <input type="email" id="email" placeholder="ten_ban@domain.com" required autocomplete="email">
+        </div>
+      </div>
+
+      <!-- Ô nhập Mật khẩu -->
+      <div class="input-group">
+        <label for="password">Mật khẩu</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-lock input-icon"></i>
+          <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+          <button type="button" class="btn-toggle-pass" id="togglePassword" aria-label="Ẩn/hiện mật khẩu">
+            <i class="fa-regular fa-eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Ghi nhớ & Quên mật khẩu -->
+      <div class="form-actions">
+        <label class="remember-me">
+          <input type="checkbox" id="remember">
+          <span>Ghi nhớ đăng nhập</span>
+        </label>
+        <a href="#" class="forgot-link">Quên mật khẩu?</a>
+      </div>
+
+      <!-- Nút Đăng nhập -->
+      <button type="submit" class="btn-submit">
+        <span>XÁC NHẬN GIA NHẬP</span>
+        <i class="fa-solid fa-arrow-right-to-bracket"></i>
+      </button>
+
+      <!-- Chuyển sang đăng ký -->
+      <div class="card-footer">
+        Chưa có tài khoản chiến binh? 
+        <a href="register.html">Đăng ký ngay</a>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // 1. Xử lý ẩn / hiện mật khẩu
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+
+    togglePassword.addEventListener('click', () => {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      
+      const icon = togglePassword.querySelector('i');
+      icon.classList.toggle('fa-eye');
+      icon.classList.toggle('fa-eye-slash');
+    });
+
+    // 2. Xử lý gửi form đăng nhập lên Server
+    const loginForm = document.getElementById('loginForm');
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Lưu thông tin người dùng vào trình duyệt để trang index.html đọc được
+          localStorage.setItem('currentUser', JSON.stringify(data.user));
+          
+          // Chuyển hướng sang trang chủ
+          window.location.href = 'index.html';
+        } else {
+          alert('Đăng nhập thất bại: ' + data.message);
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Không thể kết nối máy chủ! Hãy kiểm tra terminal xem server.js có đang chạy không.');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng Ký Thành Viên Quân Đoàn</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Hiệu ứng nền neon -->
+  <div class="background-glow glow-1"></div>
+  <div class="background-glow glow-2"></div>
+
+  <div class="login-card">
+    <div class="card-header">
+      <div class="badge-icon">
+        <i class="fa-solid fa-user-plus"></i>
+      </div>
+      <h2>GIA NHẬP QUÂN ĐOÀN</h2>
+      <p>Khởi tạo hồ sơ chiến binh mới</p>
+    </div>
+
+    <form id="registerForm" class="login-form">
+      <!-- Tên hiển thị / Game IGN -->
+      <div class="input-group">
+        <label for="username">Tên nhân vật / IGN</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-gamepad input-icon"></i>
+          <input type="text" id="username" placeholder="Ví dụ: ShadowHunter" required>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="input-group">
+        <label for="email">Email</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-envelope input-icon"></i>
+          <input type="email" id="email" placeholder="ten_ban@domain.com" required autocomplete="email">
+        </div>
+      </div>
+
+      <!-- Mật khẩu -->
+      <div class="input-group">
+        <label for="password">Mật khẩu</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-lock input-icon"></i>
+          <input type="password" id="password" placeholder="Tối thiểu 6 ký tự" required autocomplete="new-password">
+        </div>
+      </div>
+
+      <!-- Nhập lại mật khẩu -->
+      <div class="input-group">
+        <label for="confirmPassword">Xác nhận mật khẩu</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-shield-check input-icon"></i>
+          <input type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu" required autocomplete="new-password">
+        </div>
+      </div>
+
+      <!-- Nút Đăng ký -->
+      <button type="submit" class="btn-submit">
+        <span>TẠO HỒ SƠ CHIẾN BINH</span>
+        <i class="fa-solid fa-check"></i>
+      </button>
+
+      <!-- Chuyển về Đăng nhập -->
+      <div class="card-footer">
+        Đã có tài khoản quân đoàn? 
+        <a href="login.html">Đăng nhập tại đây</a>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('registerForm');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (password !== confirmPassword) {
+        alert('Mật khẩu xác nhận không khớp!');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, email, password })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert(data.message);
+          window.location.href = 'login.html';
+        } else {
+          alert('Đăng ký thất bại: ' + data.message);
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Không thể kết nối máy chủ. Hãy đảm bảo server.js đang chạy!');
+      }
+    });
+  </script>
+</body>
+</html>
